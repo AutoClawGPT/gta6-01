@@ -7,6 +7,8 @@ import {
 } from './config.js';
 import { createRandom } from './random.js';
 
+let input = { up:false, down:false, left:false, right:false, sprint:false, action:false, attack:false, aim:false, enterVehicle:false, pause:false, map:false, lights:false, reload:false, cheatTimer:0, weapon:0 };
+
 // Re-export for main.js
 export { STEP, MAX_FRAME };
 
@@ -838,7 +840,8 @@ export function createWorld(random, saveData = null) {
   }
   
   // ========== MAIN STEP FUNCTION ==========
-  function step(dt, input) {
+  function step(dt, nextInput) {
+    input = nextInput ?? input;
     if (s.paused) return 0;
     
     let events = 0;
