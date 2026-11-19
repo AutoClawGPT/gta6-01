@@ -2,7 +2,8 @@
 // The game's rules and state: city, player, vehicles, pedestrians, police, missions, time, weather
 import {
   WORLD, PLAYER, VEHICLE, PEDESTRIAN, TRAFFIC, POLICE, MISSION, WEAPON,
-  STEP, MAX_FRAME, PALETTE, DISTRICTS, ROAD_NETWORK, TIME, WEATHER, SAVE
+  STEP, MAX_FRAME, PALETTE, DISTRICTS, ROAD_NETWORK, TIME, WEATHER, SAVE,
+  CHEATS
 } from './config.js';
 import { createRandom } from './random.js';
 
