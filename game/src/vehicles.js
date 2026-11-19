@@ -555,6 +555,7 @@ function addVehicleDamage(vehicle, damage) {
 
 function updateWheels(vehicle, dt) {
   vehicle.wheelAngles = vehicle.wheelAngles || [0, 0, 0, 0];
+  vehicle.suspension = vehicle.suspension || [0, 0, 0, 0];
   const wheelSpeed = vehicle.speed / 30; // Visual rotation speed
   for (let i = 0; i < 4; i++) {
     vehicle.wheelAngles[i] += wheelSpeed * dt * 60;

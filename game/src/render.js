@@ -1573,7 +1573,7 @@ function drawVehicleWheels(ctx, hw, hl, vehicle) {
     ctx.restore();
     
     // Suspension
-    const susp = vehicle.suspension[i] || 0;
+    const susp = vehicle.suspension?.[i] || 0;
     if (susp !== 0) {
       ctx.strokeStyle = '#444';
       ctx.lineWidth = 2;
