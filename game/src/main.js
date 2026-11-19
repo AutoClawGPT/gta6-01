@@ -123,7 +123,7 @@ async function init() {
   updateLoading(80, 'Spawning initial entities...');
   
   // Spawn initial traffic and peds
-  spawnInitialPopulation(world);
+  spawnInitialPopulation(world, rng);
   
   updateLoading(90, 'Setting up input...');
   
@@ -146,7 +146,7 @@ function updateLoading(percent, text) {
   loadingText.textContent = text;
 }
 
-function spawnInitialPopulation(world) {
+function spawnInitialPopulation(world, rng) {
   // Spawn traffic on main roads
   for (let i = 0; i < 20; i++) {
     const vehicle = createTrafficVehicle(world, rng() * WORLD.width, rng() * WORLD.height);

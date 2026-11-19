@@ -2,9 +2,12 @@
 // The game's rules and state: city, player, vehicles, pedestrians, police, missions, time, weather
 import {
   WORLD, PLAYER, VEHICLE, PEDESTRIAN, TRAFFIC, POLICE, MISSION, WEAPON,
-  STEP, PALETTE, DISTRICTS, ROAD_NETWORK, TIME, WEATHER, SAVE
+  STEP, MAX_FRAME, PALETTE, DISTRICTS, ROAD_NETWORK, TIME, WEATHER, SAVE
 } from './config.js';
 import { createRandom } from './random.js';
+
+// Re-export for main.js
+export { STEP, MAX_FRAME };
 
 // Entity kinds
 export const KIND_PLAYER = 0;
@@ -584,12 +587,12 @@ export function createWorld(random, saveData = null) {
       
       // Prefer sidewalk areas
       if (!isOnRoad(s, wx, wy) || s.rng() < 0.3) {
-        spawnPed(s, wx, wy, getPedTypeForDistrict(district));
+        spawnPed(s, wx, wy, getPedTypeForDistrict(district, s.rng));
       }
     }
   }
   
-  function getPedTypeForDistrict(district) {
+  function getPedTypeForDistrict(district, rng) {
     const types = ['civilian', 'business', 'gang', 'tourist'];
     const weights = { 
       urban: [0.4, 0.3, 0.1, 0.2],
@@ -603,7 +606,7 @@ export function createWorld(random, saveData = null) {
       highway: [0.6, 0.2, 0.1, 0.1],
     };
     const w = weights[district.type] || weights.urban;
-    const r = s.rng();
+    const r = rng();
     let sum = 0;
     for (let i = 0; i < types.length; i++) {
       sum += w[i];

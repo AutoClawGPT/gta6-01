@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-import { mkdirSync, existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 async function captureScreenshots() {
@@ -14,11 +14,11 @@ async function captureScreenshots() {
   console.log('Navigating to game...');
   await page.goto('http://localhost:8080', { waitUntil: 'networkidle', timeout: 120000 });
 
-  // Wait additional time for game to initialize
+  // Wait for game to initialize
   console.log('Waiting 10s for game init...');
   await page.waitForTimeout(10000);
 
-  // Hide the loading screen so it doesn't intercept clicks
+  // Hide the loading screen so button clicks work
   console.log('Hiding loading screen...');
   await page.evaluate(() => {
     const loadingScreen = document.getElementById('loading-screen');
@@ -27,18 +27,22 @@ async function captureScreenshots() {
     }
   });
 
-  // Small additional wait for any transitions
+  // Wait for transition
   await page.waitForTimeout(2000);
 
-  console.log('Game loaded, capturing screenshots...');
+  console.log('Capturing screenshots with shot scenes...');
 
   async function captureShot(shotName, filename) {
-    // Take screenshot directly - button click may be unreliable with loading screen
+    // Click the shot button to configure the game world
+    await page.click(`button[data-shot="${shotName}"]`);
+    await page.waitForTimeout(1000);
+
+    // Take screenshot
     await page.screenshot({ path: join(screenshotDir, filename), fullPage: false });
-    console.log(`Captured ${filename}`);
+    console.log(`Captured ${filename} (shot: ${shotName})`);
   }
 
-  // Capture all 4 screenshots
+  // Capture all 4 screenshots with proper scene setup
   await captureShot('cover', 'cover.png');
   await captureShot('city', 'city.png');
   await captureShot('chase', 'chase.png');
