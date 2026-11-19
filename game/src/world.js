@@ -386,6 +386,7 @@ export function createWorld(random, saveData = null) {
     cheatTimer: 0,
     saveVersion: SAVE.version,
   };
+  const s = state;
   
   // Initialize from save data if provided
   if (saveData) {
@@ -2433,7 +2434,7 @@ export function createWorld(random, saveData = null) {
   
   // Public API
   return {
-    state,
+    ...state,
     step,
     getSaveData,
     addWanted,
