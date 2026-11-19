@@ -1,19 +1,272 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Block Dodger</title>
-<style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #11141b; }
-  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
-  /* Read aloud, never shown: the status line screen readers announce. */
-  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GTA 6: Vesper Bay - Open World Crime Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #0d0d12;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #e8e8f0;
+    }
+    
+    #game-canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
+    }
+    
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0d0d12 0%, #1a1f2e 50%, #0d1b2a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    .loading-logo {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      background: linear-gradient(90deg, #ffd700, #ff6b35, #e74c3c, #ffd700);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 3s ease infinite;
+      margin-bottom: 24px;
+      text-shadow: 0 0 60px rgba(255, 215, 0, 0.5);
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .loading-subtitle {
+      font-size: 14px;
+      color: #8a8a9a;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    
+    .loading-bar {
+      width: 400px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ffd700, #ff6b35, #e74c3c);
+      background-size: 200% 100%;
+      animation: progressFlow 1.5s ease infinite;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    
+    @keyframes progressFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .loading-text {
+      font-size: 12px;
+      color: #6a6a7a;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+    }
+    
+    #debug-overlay {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #0f0;
+      padding: 12px;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 11px;
+      border-radius: 4px;
+      border: 1px solid #0f0;
+      z-index: 100;
+      display: none;
+      pointer-events: none;
+      line-height: 1.6;
+    }
+    
+    #debug-overlay.visible {
+      display: block;
+    }
+    
+    #controls-help {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(26, 26, 34, 0.9);
+      border: 1px solid #3a3a48;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 11px;
+      color: #8a8a9a;
+      z-index: 50;
+      max-width: 280px;
+      line-height: 1.8;
+    }
+    
+    #controls-help kbd {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #3a3a48;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      color: #e8e8f0;
+      margin-right: 4px;
+    }
+    
+    #controls-help .category {
+      color: #ffd700;
+      font-weight: 600;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    
+    #controls-help .category:first-child {
+      margin-top: 0;
+    }
+    
+    .screenshot-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .screenshot-btn button {
+      background: rgba(26, 26, 34, 0.9);
+      border: 1px solid #3a3a48;
+      color: #e8e8f0;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: "JetBrains Mono", monospace;
+      transition: all 0.2s;
+    }
+    
+    .screenshot-btn button:hover {
+      background: rgba(255, 215, 0, 0.2);
+      border-color: #ffd700;
+      color: #ffd700;
+    }
+    
+    .screenshot-btn button:active {
+      transform: scale(0.98);
+    }
+    
+    @media (max-width: 768px) {
+      #controls-help {
+        display: none;
+      }
+      .screenshot-btn {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-<canvas id="game" aria-label="Block Dodger: move the paddle left and right to dodge falling blocks and catch coins"></canvas>
-<p id="status" role="status" aria-live="polite"></p>
-<script type="module" src="./src/main.js"></script>
+  <div id="loading-screen">
+    <div class="loading-logo">GTA 6</div>
+    <div class="loading-subtitle">VICE CITY</div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loading-progress"></div>
+    </div>
+    <div class="loading-text" id="loading-text">Initializing...</div>
+  </div>
+  
+  <canvas id="game-canvas"></canvas>
+  
+  <div id="debug-overlay"></div>
+  
+  <div class="screenshot-btn">
+    <button id="btn-cover" data-shot="cover">📸 Cover</button>
+    <button id="btn-city" data-shot="city">📸 City</button>
+    <button id="btn-chase" data-shot="chase">📸 Chase</button>
+    <button id="btn-arrest" data-shot="arrest">📸 Arrest</button>
+    <button id="btn-debug" data-shot="debug">🐛 Debug</button>
+  </div>
+  
+  <div id="controls-help">
+    <div class="category">MOVEMENT</div>
+    <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move / Drive<br>
+    <kbd>Shift</kbd> Sprint / Handbrake<br>
+    <kbd>Space</kbd> Enter/Exit Vehicle<br>
+    
+    <div class="category">COMBAT</div>
+    <kbd>LMB</kbd> Attack / Shoot<br>
+    <kbd>RMB</kbd> Aim<br>
+    <kbd>1-6</kbd> Switch Weapon<br>
+    <kbd>R</kbd> Reload<br>
+    
+    <div class="category">INTERACTION</div>
+    <kbd>E</kbd> Interact / Mission<br>
+    <kbd>M</kbd> Toggle Full Map<br>
+    <kbd>Esc</kbd> Pause<br>
+    
+    <div class="category">CHEATS</div>
+    <kbd>~</kbd> Cheat Console<br>
+    <code>health</code> Full Health<br>
+    <code>weapons</code> All Weapons<br>
+    <code>wanted0</code> Clear Wanted<br>
+    <code>spawncar</code> Spawn Sports Car
+  </div>
+  
+  <script type="importmap">
+  {
+    "imports": {
+      "./src/config.js": "./src/config.js",
+      "./src/world.js": "./src/world.js",
+      "./src/vehicles.js": "./src/vehicles.js",
+      "./src/police.js": "./src/police.js",
+      "./src/missions.js": "./src/missions.js",
+      "./src/hud.js": "./src/hud.js",
+      "./src/render.js": "./src/render.js",
+      "./src/shots.js": "./src/shots.js",
+      "./src/random.js": "./src/random.js",
+      "./src/main.js": "./src/main.js"
+    }
+  }
+  </script>
+  
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>
