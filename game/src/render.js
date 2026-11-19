@@ -1543,7 +1543,7 @@ function drawVehicleWheels(ctx, hw, hl, vehicle) {
   
   for (let i = 0; i < 4; i++) {
     const pos = positions[i];
-    const angle = vehicle.wheelAngles[i] || 0;
+    const angle = vehicle.wheelAngles?.[i] || 0;
     
     // Tire
     ctx.fillStyle = vehicle.wheelColor || '#1a1a1a';
