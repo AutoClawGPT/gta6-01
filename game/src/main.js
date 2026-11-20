@@ -1,5 +1,8 @@
 // GTA 6: Vesper Bay - Main Entry Point
-// Open-world crime game for make.fun bounty gta6-01
+// Open-world crime game for make.fun bounty gta6-01. Initializes all game systems,
+// creates the world, and starts the main game loop. Entry point for both gameplay
+// and generating the make.fun submission dossier. All systems are deterministic when
+// seeded with the same RNG seed for reproducible results.
 import { WORLD, PLAYER, VEHICLE, PEDESTRIAN, TRAFFIC, POLICE, MISSION, PALETTE, TIME, WEATHER, SAVE, CHEATS, DISTRICTS, ROAD_NETWORK, FONT, FONT_MONO } from './config.js';
 import { createWorld, KIND_PLAYER, KIND_VEHICLE, KIND_PED, KIND_POLICE, KIND_MISSION_MARKER, KIND_CHECKPOINT, KIND_PICKUP, VEH_TYPE_CAR, VEH_TYPE_MOTORCYCLE, VEH_TYPE_TRUCK, VEH_TYPE_POLICE, EVENT_ENTER_VEHICLE, EVENT_EXIT_VEHICLE, EVENT_MISSION_START, EVENT_MISSION_COMPLETE, EVENT_MISSION_FAIL, EVENT_WANTED_CHANGE, EVENT_PLAYER_DEATH, EVENT_PLAYER_WASTED, EVENT_CHECKPOINT, EVENT_PICKUP, STEP, MAX_FRAME, distance, distanceSq, angleTo, normalizeAngle, clamp, lerp, isOnRoad, getRoadDirection, getDistrictAt, findRoadPosition } from './world.js';
 import { createVehicle, VEH_TYPE_CAR as V_CAR, VEH_TYPE_MOTORCYCLE as V_MOTO, VEH_TYPE_TRUCK as V_TRUCK, VEH_TYPE_POLICE as V_POLICE, VEHICLE_STATES, updateVehicle, createTrafficVehicle, createPoliceVehicle, getVehicleCorners, getVehicleSpeed, getVehicleGear, explodeVehicle } from './vehicles.js';
@@ -589,5 +592,15 @@ init().catch(err => {
   loadingText.style.color = '#e74c3c';
 });
 
-// Export for debugging
-window.game = { world, renderer, hud, police, missions, input, takeScreenshot, debugMode: () => debugMode = !debugMode };
+// Export for debugging and diagnostics
+const getGameState = () => ({
+  screen: world.screen,
+  wantedLevel: world.player.wantedLevel,
+  money: world.player.money,
+  health: world.player.health,
+  position: { x: world.player.x, y: world.player.y },
+  frame: world.frame,
+  paused: world.paused,
+});
+
+window.game = { world, renderer, hud, police, missions, input, takeScreenshot, getGameState, debugMode: () => debugMode = !debugMode };

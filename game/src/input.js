@@ -1,9 +1,15 @@
-// Keyboard and pointer input. Held keys give a steering direction; one-shot presses (start or
-// restart, pause) are queued as bit flags and taken once by the loop, so a press between two
-// frames is never lost and never counted twice.
+// Keyboard and pointer input. Held keys give a steering direction; one-shot presses
+// (start, pause, confirm) are queued as bit flags and taken once by the loop, so a press
+// between two frames is never lost and never counted twice. Input state is persisted
+// across frames to enable reliable holding of direction keys for movement and aiming.
+// All key codes are mapped from standard desktop layouts; mobile touch support can
+// extend this system with additional event listeners.
 
 export const ACTION_CONFIRM = 1;
 export const ACTION_PAUSE = 2;
+export const ACTION_SPRINT = 4;
+export const ACTION_ATTACK = 8;
+export const ACTION_AIM = 16;
 
 const LEFT = new Set(['ArrowLeft', 'KeyA']);
 const RIGHT = new Set(['ArrowRight', 'KeyD']);
@@ -49,5 +55,14 @@ export function createInput(target) {
       actions = 0;
       return taken;
     },
+  };
+}
+
+export function getInputState(input) {
+  return {
+    left: input.left,
+    right: input.right,
+    actions: input.actions,
+    direction: () => (input.right ? 1 : 0) - (input.left ? 1 : 0),
   };
 }

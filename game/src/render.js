@@ -1,7 +1,25 @@
-// Render System - Canvas 2D rendering for open world GTA 6 style game
+// Render System - Canvas 2D rendering for open world GTA 6 style game.
+// Handles all visual rendering: sky, water, ground, roads, buildings, props,
+// vehicles, pedestrians, effects, and HUD overlay. Uses canvas 2D context with
+// optimized drawing order, culling, and visual effects for performance on desktop
+// and mobile browsers. Render order follows: sky → water → ground → roads → buildings
+// → props → vehicles → peds → effects → HUD for correct layering.
 import { WORLD, PALETTE, FONT, FONT_MONO, DISTRICTS, ROAD_NETWORK, TIME, WEATHER, VEHICLE, PEDESTRIAN } from './config.js';
 import { distance, angleTo, normalizeAngle, isOnRoad, getRoadDirection, getDistrictAt } from './world.js';
 import { getVehicleCorners, getVehicleBounds } from './vehicles.js';
+
+export function getRendererInfo(renderer) {
+  return {
+    canvas: renderer.canvas,
+    ctx: renderer.ctx,
+    layers: renderer.layers,
+    camera: { ...renderer.camera },
+    viewWidth: renderer.viewWidth,
+    viewHeight: renderer.viewHeight,
+    drawCalls: renderer.drawCalls,
+    lastFrameTime: renderer.lastFrameTime,
+  };
+}
 
 export function createRenderer(canvas) {
   const ctx = canvas.getContext('2d');
@@ -25,6 +43,9 @@ export function createRenderer(canvas) {
     // Visual effects
     effects: [],
     screenShake: { x: 0, y: 0, intensity: 0, time: 0 },
+    // Render stats
+    drawCalls: 0,
+    lastFrameTime: 0,
     // Lighting
     lights: [],
     // Performance

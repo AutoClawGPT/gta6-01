@@ -1,4 +1,7 @@
-// Police System - Wanted levels, pursuit, arrest, helicopters, roadblocks
+// Police System - Wanted levels, pursuit, arrest, helicopters, roadblocks, and spike strips.
+// Manages wanted level tracking, police unit AI (patrol, pursue, ram, blockade, helicopter),
+// roadblocks, spike strips, and arrest logic. Wanted levels range from 0-5 stars with
+// decay when hidden. All police behaviors are deterministic given the same RNG seed.
 import { POLICE, WORLD, PLAYER, VEHICLE, PALETTE } from './config.js';
 import { distance, distanceSq, angleTo, normalizeAngle, clamp, lerp, findRoadPosition, isOnRoad, getRoadDirection } from './world.js';
 import { createVehicle, VEH_TYPE_POLICE, VEHICLE_STATES, updateVehicle, explodeVehicle } from './vehicles.js';
@@ -9,6 +12,16 @@ export const WANTED_TWO = 2;
 export const WANTED_THREE = 3;
 export const WANTED_FOUR = 4;
 export const WANTED_FIVE = 5;
+
+export function getWantedState(wantedLevel, wantedStars, isHidden) {
+  return {
+    level: wantedLevel,
+    stars: wantedStars,
+    hidden: isHidden,
+    display: `Wanted Level: ${wantedLevel} ${'★'.repeat(wantedLevel)}`,
+    decaysWhenHidden: isHidden && wantedLevel > 0,
+  };
+}
 
 export const POLICE_STATES = {
   IDLE: 'idle',

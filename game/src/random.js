@@ -1,5 +1,9 @@
-// Seeded Random Number Generator - Deterministic for replayability
-// Park-Miller LCG with 32-bit state
+// Seeded Random Number Generator - Deterministic for replayability.
+// Provides two RNG algorithms: Park-Miller LCG (32-bit, for float [0,1) values)
+// and Xorshift32 (32-bit integer, for fast random integers and booleans).
+// Both are deterministic when given the same seed, enabling reproducible gameplay
+// scenarios, save/load consistency, and deterministic screenshot generation.
+// Park-Miller constants: multiplier=16807, modulus=2147483647 (INT_MAX).
 
 export function createRandom(seed = Date.now()) {
   let state = seed >>> 0;
@@ -34,6 +38,9 @@ export function createRandom32(seed = Date.now()) {
     },
     bool: (prob = 0.5) => createRandom32().float() < prob,
     choice: (arr) => arr[Math.floor(createRandom32().float() * arr.length)],
+    floatRange: (min, max) => {
+      return min + (createRandom32().next() % 1000 / 1000) * (max - min);
+    },
     shuffle: (arr) => {
       const result = [...arr];
       for (let i = result.length - 1; i > 0; i--) {

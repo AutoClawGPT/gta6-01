@@ -1,4 +1,8 @@
-// Vehicle System - Player cars, NPC traffic, physics, handling
+// Vehicle System - Player cars, NPC traffic, physics, and handling.
+// Provides vehicle creation, physics simulation, AI behavior, collision detection,
+// damage effects, and wheel animation for all vehicle types including cars,
+// motorcycles, trucks, and police vehicles. All physics parameters are configured
+// through VEH_CONFIGS for easy tuning and balance.
 import { VEHICLE, WORLD, ROAD_NETWORK, PALETTE } from './config.js';
 import { distance, distanceSq, angleTo, normalizeAngle, clamp, lerp, isOnRoad, getRoadDirection, findRoadPosition } from './world.js';
 
@@ -663,6 +667,20 @@ export function isPointInVehicle(vehicle, x, y) {
 
 export function getVehicleSpeed(vehicle) {
   return Math.abs(vehicle.speed);
+}
+
+export function getVehicleInfo(vehicle) {
+  const config = VEH_CONFIGS[vehicle.type] || VEH_CONFIGS[VEH_TYPE_CAR];
+  return {
+    type: vehicle.type,
+    state: vehicle.state,
+    speed: vehicle.speed,
+    maxSpeed: config.maxSpeed,
+    health: vehicle.health,
+    maxHealth: config.maxHealth,
+    isPolice: vehicle.isPolice,
+    siren: vehicle.siren,
+  };
 }
 
 export function getVehicleGear(vehicle) {

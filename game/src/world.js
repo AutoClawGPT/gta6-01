@@ -1,5 +1,8 @@
 // GTA 6 Style Open-World Simulation
-// The game's rules and state: city, player, vehicles, pedestrians, police, missions, time, weather
+// The game's rules and state: city, player, vehicles, pedestrians, police, missions, time, weather.
+// Provides core systems including road network queries, district lookups, entity pools,
+// wanted logic, time/weather cycles, and world state management.
+// All exported functions are deterministic when given the same RNG seed for replayability.
 import {
   WORLD, PLAYER, VEHICLE, PEDESTRIAN, TRAFFIC, POLICE, MISSION, WEAPON,
   STEP, MAX_FRAME, PALETTE, DISTRICTS, ROAD_NETWORK, TIME, WEATHER, SAVE,
@@ -149,6 +152,14 @@ export function getRoadDirection(world, x, y) {
   if (onNS) return 0; // North-South
   if (onEW) return 1; // East-West
   return -1;
+}
+
+export function getGameTime(timeOfDay) {
+  const hour = Math.floor(timeOfDay / 3600) % 24;
+  const minute = Math.floor((timeOfDay % 3600) / 60);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
 }
 
 export function getDistrictAt(x, y) {

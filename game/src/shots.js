@@ -1,5 +1,7 @@
-// Screenshot Scenes - Staging for the 4 required screenshots
-// cover, city, chase, arrest
+// Screenshot Scenes - Staging for the 4 required make.fun bounty screenshots
+// cover, city, chase, arrest. Each scene is pre-configured with specific world state,
+// vehicle placement, police presence, and mission objectives to demonstrate gameplay
+// variety for the submission dossier. Scenes are deterministic given the same RNG seed.
 import { WORLD, PALETTE, DISTRICTS, VEHICLE, PLAYER, POLICE } from './config.js';
 import { createVehicle, VEH_TYPE_CAR, VEH_TYPE_MOTORCYCLE, VEH_TYPE_POLICE, VEHICLE_STATES } from './vehicles.js';
 import { createPoliceSystem, WANTED_THREE, WANTED_FIVE, POLICE_UNIT_TYPES } from './police.js';
@@ -815,6 +817,10 @@ export function applyShot(world, renderer, shotName) {
     default:
       return null;
   }
+}
+
+export function getShotSceneNames() {
+  return Object.values(SHOT_SCENES);
 }
 
 export function captureScreenshot(canvas, filename) {

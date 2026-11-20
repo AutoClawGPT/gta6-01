@@ -1,4 +1,8 @@
-// Mission System - Story missions, side missions, objectives, rewards
+// Mission System - Story missions, side missions, objectives, and rewards.
+// Manages mission creation, tracking, objectives, completion state, and rewards.
+// Supports story missions, side tasks, races, stranger encounters, and survival modes.
+// Mission state is tracked via MISSION_STATE (inactive, active, completed, failed, locked).
+// Objectives use OBJECTIVE_TYPE enums for consistent handling across all mission kinds.
 import { MISSION, WORLD, PALETTE } from './config.js';
 import { distance, distanceSq, angleTo, findRoadPosition } from './world.js';
 
@@ -40,6 +44,16 @@ export const MISSION_STATE = {
   FAILED: 'failed',
   LOCKED: 'locked',
 };
+
+export function getMissionStatus(s, missionId) {
+  const mission = s.missions.find(m => m.id === missionId);
+  if (!mission) return { state: MISSION_STATE.LOCKED, progress: 0 };
+  const currentObj = mission.objectives[mission.currentObjective] || {};
+  const progress = typeof currentObj.target !== 'undefined'
+    ? Math.min(1, (mission.currentObjective >= 0 ? 1 : 0))
+    : 0;
+  return { state: mission.state, progress, currentObjective: mission.currentObjective, totalObjectives: mission.objectives.length };
+}
 
 const MISSION_DATA = {
   // Story Missions - 3 Days, 6 Missions

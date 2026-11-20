@@ -1,4 +1,7 @@
 // GTA 6 Style Open-World Configuration - Every tuning number in one place
+// Used for: world parameters, player stats, vehicle handling, weapon data, police settings,
+// mission configuration, palette colors, audio settings, save format, cheat codes, and district definitions.
+// Ensures all game systems reference consistent values for balanced gameplay.
 
 export const WORLD = {
   // City grid: 32x32 sectors, each 256x256 logical units
@@ -212,6 +215,14 @@ export const FONT_MONO = '"JetBrains Mono", "Fira Code", "Consolas", monospace';
 export const AUDIO = {
   enabled: false, // No audio for now
   masterVolume: 0.7,
+};
+
+export const DEBUG = {
+  // Enable for development diagnostics
+  enabled: false,
+  logEvents: false,
+  showFPS: false,
+  godMode: false, // Infinite health/armor for testing
 };
 
 export const SAVE = {
